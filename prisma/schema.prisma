@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  
+}
+
+model Coin {
+  id        Int      @id @default(autoincrement())
+  symbol    String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  basePairs   CoinPair[] @relation("BaseCoin")
+  quotePairs  CoinPair[] @relation("QuoteCoin")
+  
+  @@map("coins")
+}
+
+model CoinPair {
+  id        Int      @id @default(autoincrement())
+  baseCoinId Int
+  quoteCoinId Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  baseCoin  Coin     @relation("BaseCoin", fields: [baseCoinId], references: [id], onDelete: Cascade)
+  quoteCoin Coin     @relation("QuoteCoin", fields: [quoteCoinId], references: [id], onDelete: Cascade)
+
+  @@unique([baseCoinId, quoteCoinId])
+  @@map("coin_pairs")
+}
+
+model DataProvider {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  apiKeyEnvVar    String
+  apiKeyHeader    String
+  url             String
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("data_providers")
+}
