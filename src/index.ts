@@ -4,7 +4,9 @@ import { PrismaClient } from "@prisma/client";
 import { pairPriceRoute, pairsRoute } from "./routes";
 
 const prisma = new PrismaClient();
+
 const port = Number(process.env.PORT) ?? 3001;
+const host = process.env.HOST as string;
 
 export const createServer = (): IFastifyInstance => {
   const server = Fastify({
@@ -38,7 +40,7 @@ const gracefulShutdown = async (signal: string) => {
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 
-server.listen({ port, host: "0.0.0.0" }, (err, address) => {
+server.listen({ port, host }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
