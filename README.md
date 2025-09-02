@@ -3,7 +3,8 @@
 This is the backend component for a cryptocurrency price tracking application, developed as a test assignment for a Senior FullStack Developer position.
 
 ## 🔗 Project Links
-- **Frontend Repository**: [Link to frontend repository](https://github.com/your-username/frontend-repo-name)
+- **Project url**: [Link to railway app](https://crypto-price-frontend-production.up.railway.app/)
+- **Frontend Repository**: [Link to frontend repository](https://github.com/rmehtije/crypto-price-frontend)
 
 ## 📋 Overview
 
