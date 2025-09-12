@@ -1,5 +1,7 @@
+import { IPriceData } from "./pairTypes";
+
 export interface IProviderService {
-  fetchPrice(baseSymbol: string, quoteSymbol: string): Promise<any>;
+  fetchPrice(baseSymbol: string, quoteSymbol: string): Promise<IPriceData>;
 }
 
 export interface IDataProvider {
@@ -9,11 +11,12 @@ export interface IDataProvider {
   apiKeyHeader: string;
   isActive: boolean;
 }
-export interface IProviderResponse {
+
+export interface IProviderResponse<T> {
   data: {
     [key: string]: Array<{
       quote: {
-        [key: string]: number;
+        [key: string]: T;
       };
     }>;
   };

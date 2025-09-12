@@ -1,4 +1,4 @@
-import { IProviderService } from "../types";
+import { IProviderResponse, IPriceData } from "../types";
 import { DataProvider as IDataProvider } from "@prisma/client";
 
 const apiKeyError = "API key not found for environment variable:";
@@ -7,7 +7,7 @@ const providerUrlError = "Provider URL is not configured";
 const unknowFetchError =
   "Unknown error occurred while fetching price from CoinMarketCap.";
 
-export class CoinMarketCapProvider implements IProviderService {
+export class CoinMarketCapProvider {
   protected provider: IDataProvider;
   protected headers: { [key: string]: string };
 
@@ -24,37 +24,46 @@ export class CoinMarketCapProvider implements IProviderService {
     };
   }
 
-  async fetchPrice(baseSymbol: string, quoteSymbol: string) {
+  async fetchPrice(
+    baseSymbol: string,
+    quoteSymbol: string
+  ): Promise<IPriceData> {
     const endpoint = "/cryptocurrency/quotes/latest";
-    try {
-      const url = this.buildUrl(baseSymbol, quoteSymbol, endpoint);
 
-      return fetch(url, {
+    let priceData: IProviderResponse<IPriceData>;
+
+    const url = this.buildUrl(
+      {
+        symbol: baseSymbol,
+        convert: quoteSymbol,
+      },
+      endpoint
+    );
+
+    try {
+      const response = await fetch(url, {
         headers: this.headers,
         method: "GET",
       });
+
+      priceData = (await response.json()) as IProviderResponse<IPriceData>;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`${priceFetchError} ${error.message}`);
       }
       throw new Error(unknowFetchError);
     }
+
+    return priceData.data[baseSymbol]?.[0]?.quote[quoteSymbol];
   }
 
-  private buildUrl(
-    baseSymbol: string,
-    quoteSymbol: string,
-    endpoint: string
-  ): string {
+  private buildUrl(params: Record<string, string>, endpoint: string): string {
     if (!this.provider.url) {
       throw new Error(providerUrlError);
     }
 
-    const params = new URLSearchParams({
-      symbol: baseSymbol.toUpperCase(),
-      convert: quoteSymbol.toUpperCase(),
-    });
+    const searchParams = new URLSearchParams(params);
 
-    return `${this.provider.url}${endpoint}?${params}`;
+    return `${this.provider.url}${endpoint}?${searchParams}`;
   }
 }

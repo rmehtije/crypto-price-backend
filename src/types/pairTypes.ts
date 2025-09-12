@@ -2,14 +2,16 @@ export interface IPairParams {
   pair: string;
 }
 
+export interface IPriceData {
+  price: number;
+  volume_24h: number;
+  percent_change_24h: number;
+  market_cap: number;
+}
+
 export interface IPriceResponse {
   success: boolean;
-  data?: {
-    price: number;
-    volume_24h: number;
-    percent_change_24h: number;
-    market_cap: number;
-  };
+  data?: IPriceData;
   timestamp?: number;
   pair?: {
     base: string;
